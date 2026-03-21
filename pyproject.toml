@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kernel-lab"
+version = "0.1.0"
+description = "Readable Torch, Triton, and CUDA operator research scaffold."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["torch>=2.4"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+triton = ["triton>=3.0; platform_system == 'Linux'"]
+cuda = ["ninja>=1.11"]
+
+[tool.setuptools.packages.find]
+include = ["kernel_lab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+

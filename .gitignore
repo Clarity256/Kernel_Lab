@@ -1,0 +1,14 @@
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.so
+*.dylib
+build/
+dist/
+*.egg-info/
+.DS_Store
+results/
+*.nsys-rep
+*.qdrep
+start.md
