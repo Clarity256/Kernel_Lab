@@ -109,6 +109,7 @@ Keep the benchmark script stable while changing the kernel implementation. That 
 File:
 
 - `kernel_lab/ops/triton/rmsnorm.py`
+- `docs/notes/rmsnorm-triton.md`
 
 Suggested workflow:
 
@@ -119,6 +120,8 @@ Suggested workflow:
 5. Re-run `bench_rmsnorm.py` with `--backend triton`.
 
 The important rule is that the Triton version should not invent a new interface. The framework works best when every backend shares one operator name and one Python-level call signature.
+
+This repository now includes a minimal working Triton RMSNorm example. See `docs/notes/rmsnorm-triton.md` for the implementation walk-through.
 
 ## 7. Add the CUDA implementation last
 
@@ -181,4 +184,3 @@ For the next operator such as `softmax`, `rope`, or `swiglu`, repeat the same se
 8. profile
 
 This is the main value of the framework: every new operator follows the same structure, so the learning cost stays low.
-

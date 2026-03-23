@@ -6,7 +6,7 @@ import torch
 
 from kernel_lab.ops import registry
 from kernel_lab.ops.common.shapes import get_shape
-from kernel_lab.ops.common.utils import benchmark_call
+from kernel_lab.ops.common.utils import benchmark_call, preferred_backends_for_device
 
 
 def parse_args() -> argparse.Namespace:
@@ -29,8 +29,9 @@ def main() -> None:
     x = torch.randn(shape.batch, shape.seq_len, shape.hidden_size, device=device, dtype=dtype)
     weight = torch.randn(shape.hidden_size, device=device, dtype=dtype)
     if args.backend == "auto":
-        fn = lambda: registry.run("rmsnorm", x, weight, preferred=("cuda", "triton", "reference"))
-        backend_name = registry.get("rmsnorm", preferred=("cuda", "triton", "reference")).backend
+        preferred = preferred_backends_for_device(device)
+        fn = lambda: registry.run("rmsnorm", x, weight, preferred=preferred)
+        backend_name = registry.get("rmsnorm", preferred=preferred).backend
     else:
         fn = lambda: registry.run("rmsnorm", x, weight, backend=args.backend)
         backend_name = args.backend
@@ -42,4 +43,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

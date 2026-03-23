@@ -28,18 +28,15 @@ def test_rmsnorm_reference_matches_formula() -> None:
 
 
 def test_optional_backends_match_reference_if_available() -> None:
-    x = torch.randn(2, 64, 128)
-    weight = torch.randn(128)
-
-    for op_name, args in {
-        "softmax": (x,),
-        "rmsnorm": (x, weight),
-    }.items():
+    for op_name in ("softmax", "rmsnorm"):
         optional_backends = [
             backend for backend in registry.available_backends(op_name) if backend != "reference"
         ]
         for backend in optional_backends:
-            expected = registry.run(op_name, *args, backend="reference")
-            actual = registry.run(op_name, *args, backend=backend)
-            torch.testing.assert_close(actual, expected, atol=1e-4, rtol=1e-4)
+            device = torch.device("cuda" if backend in {"triton", "cuda"} else "cpu")
+            x = torch.randn(2, 64, 128, device=device)
+            op_args = (x,) if op_name == "softmax" else (x, torch.randn(128, device=device))
 
+            expected = registry.run(op_name, *op_args, backend="reference")
+            actual = registry.run(op_name, *op_args, backend=backend)
+            torch.testing.assert_close(actual, expected, atol=1e-4, rtol=1e-4)

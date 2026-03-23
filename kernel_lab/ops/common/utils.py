@@ -5,6 +5,12 @@ import time
 import torch
 
 
+def preferred_backends_for_device(device: torch.device) -> tuple[str, ...]:
+    if device.type == "cuda":
+        return ("cuda", "triton", "reference")
+    return ("reference",)
+
+
 def _synchronize(device: torch.device) -> None:
     if device.type == "cuda":
         torch.cuda.synchronize(device)
@@ -35,4 +41,3 @@ def benchmark_call(
         "min_ms": min(times_ms),
         "max_ms": max(times_ms),
     }
-
