@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from setuptools import setup
@@ -30,12 +31,22 @@ def build_cuda_extensions():
     ]
 
 
+def should_build_cuda_extension() -> bool:
+    return "build_ext" in sys.argv
+
+
 if __name__ == "__main__":
-    from torch.utils.cpp_extension import BuildExtension
+    setup_kwargs = {"name": "kernel_lab_cuda"}
 
-    setup(
-        name="kernel_lab_cuda",
-        ext_modules=build_cuda_extensions(),
-        cmdclass={"build_ext": BuildExtension},
-    )
+    if should_build_cuda_extension():
+        try:
+            from torch.utils.cpp_extension import BuildExtension
+        except ModuleNotFoundError as exc:
+            raise RuntimeError(
+                "Building the CUDA extension requires torch in the active environment."
+            ) from exc
 
+        setup_kwargs["ext_modules"] = build_cuda_extensions()
+        setup_kwargs["cmdclass"] = {"build_ext": BuildExtension}
+
+    setup(**setup_kwargs)
